@@ -1,3 +1,4 @@
+﻿
 {
   "description": "Konfigurasi untuk 34 portal berita. Edit nilai di bawah sesuai kebutuhan dan jalankan generate-sites.js",
   "basePath": "../",
@@ -30,9 +31,9 @@
     {
       "id": 3,
       "folderName": "site-03-portal3",
-      "siteName": "Warta Janten",
-      "email": "wartajanten@gmail.com",
-      "socialHandle": "wartajanten",
+      "siteName": "Titik Jabar",
+      "email": "titikjabar@gmail.com",
+      "socialHandle": "titikjabar",
       "colors": {
         "primary": "#065F46",
         "dark": "#022C22",
@@ -413,3 +414,4 @@
     }
   ]
 }
+
