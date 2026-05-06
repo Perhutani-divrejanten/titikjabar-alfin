@@ -1,58 +1,79 @@
 name: Deploy ke cPanel
-
 on:
   push:
     branches: [main]
   schedule:
-    - cron: '0 8 * * *'   # otomatis update setiap 6 jam
+    - cron: '0 8 * * *'
 
 jobs:
-  deploy:
+  deploy-main:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
+      - run: if [ -f package.json ]; then npm ci; fi
+      - run: node tools/generate.js
 
-      - name: Install dependencies (if any)
-        run: |
-          if [ -f package.json ]; then npm ci; fi
-
-      - name: Run static generator
-        run: node tools/generate.js
-
-      - name: Deploy via FTP
+      - name: Deploy file utama (bukan folder article)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: 195.88.211.130
-          username: deploy@wartajanten.net
+          server: 195.88.211.226
+          username: deploy1@bandungbersuara.jabarinfo.id
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
           protocol: ftp
-          local-dir: ./  # atau ./ jika ingin upload semua
+          security: loose
+          local-dir: ./
           server-dir: /titikjabar/
-          timeout: 60000
+          timeout: 300000
           dangerous-clean-slate: false
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
             **/.github/**
+            **/tools/**
+            **/scripts/**
+            **/article/**
             *.bak*
+            *.ps1
+            *.md
             articles_temp.json
             .DS_Store
             .env
             .env.local
             *.log
-            TROUBLESHOOTING.md
-            AUDIT_REPORT.md
-            PERBAIKAN_STATUS.md
-            final-verification.ps1
-            fix-encoding.ps1
-            rebrand-to-warta-janten.ps1
-            replace-logo.ps1
+            netlify.toml
+            package.json
+            package-lock.json
+            LICENSE.txt
+            test.jpg
+
+  deploy-articles:
+    runs-on: ubuntu-latest
+    needs: deploy-main  # jalankan setelah job pertama selesai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: if [ -f package.json ]; then npm ci; fi
+      - run: node tools/generate.js
+
+      - name: Deploy folder article saja
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 195.88.211.226
+          username: deploy1@bandungbersuara.jabarinfo.id
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftp
+          security: loose
+          local-dir: ./article/
+          server-dir: /titikjabar/article/
+          timeout: 300000
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
