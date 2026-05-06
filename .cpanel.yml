@@ -1,0 +1,145 @@
+---
+# ==============================================================================
+# cPanel Git Version Control Deployment Configuration
+# 
+# File ini memberitahu cPanel bagaimana menangani file setelah pull dari GitHub.
+# Lokasi deployment, file/folder yang disalin, dan file/folder yang diabaikan
+# ditentukan di sini.
+#
+# Dokumentasi: https://docs.cpanel.net/whm/git-version-control/
+# ==============================================================================
+
+# Versi schema konfigurasi cPanel
+version: 1.0
+
+# ==============================================================================
+# Konfigurasi Deployment
+# ==============================================================================
+deployment:
+  # Direktori target deployment di server (relative dari public_html atau document root)
+  # 
+  # PENTING: Ubah path ini sesuai dengan struktur deployment Anda:
+  # - Untuk deploy ke root (contoh: warta.janten.net): 
+  #   path: '/'
+  # - Untuk deploy ke subdirektori (contoh: warta.janten.net/jejaknegeri/):
+  #   path: '/jejaknegeri'
+  # - Untuk deploy ke subdomain (contoh: jejaknegeri.warta.janten.net):
+  #   path: '/home/username/public_html/jejaknegeri'
+  #
+  # Catatan: Ganti path sesuai struktur hosting Anda
+  path: '/'
+  
+  # Direktori build (relative dari root repo)
+  # Kosongkan atau set ke '.' jika tidak ada build process
+  build_dir: '.'
+
+# ==============================================================================
+# File dan Folder yang DISALIN ke Server
+# ==============================================================================
+# Jika 'include' didefinisikan, HANYA file/folder ini yang disalin
+# Jika tidak didefinisikan, SEMUA file disalin (kecuali yang di 'exclude')
+
+include:
+  # File HTML utama
+  - index.html
+  - news.html
+  - search.html
+  - login.html
+  - register.html
+  - contact.html
+  - clearstorage.html
+  - testauth.html
+  - debug-images.html
+  
+  # Folder yang berisi artikel
+  - article/
+  
+  # Asset folders
+  - img/
+  - css/
+  - js/
+  - lib/
+  
+  # Konfigurasi dan metadata
+  - articles.json
+  - netlify.toml
+
+# ==============================================================================
+# File dan Folder yang DIABAIKAN (tidak disalin)
+# ==============================================================================
+exclude:
+  # Folder development tools
+  - .git
+  - .github
+  - node_modules
+  - tools
+  - scripts
+  
+  # File dependencies
+  - package.json
+  - package-lock.json
+  - yarn.lock
+  - composer.json
+  - composer.lock
+  
+  # File environment dan credentials (JANGAN PERNAH SERTAKAN)
+  - .env
+  - .env.local
+  - .env.*.local
+  
+  # Backup files
+  - '*.bak*'
+  - articles_temp.json
+  - '*.backup'
+  - '*.tmp'
+  
+  # Log files
+  - '*.log'
+  - logs/
+  
+  # OS files
+  - .DS_Store
+  - Thumbs.db
+  - .gitkeep
+  
+  # Documentation
+  - README.md
+  - TROUBLESHOOTING.md
+  - AUDIT_REPORT.md
+  - PERBAIKAN_STATUS.md
+  - GOOGLE_DRIVE_GUIDE.md
+  - GOOGLE_DRIVE_IMAGES_GUIDE.md
+  - AUTOMATION_README.md
+  - SEARCH_SETUP.md
+  - READ-ME.txt
+  - REBRAND_SUMMARY.txt
+  - LICENSE.txt
+  
+  # PowerShell scripts
+  - '*.ps1'
+  
+  # YAML & Config files yang tidak perlu di production
+  - deploy-to-cpanel.yml
+  - final-verification.ps1
+  - .cpanel.yml
+  - .gitignore
+  - .gitattributes
+
+# ==============================================================================
+# Hooks (Perintah Sebelum/Sesudah Deploy)
+# ==============================================================================
+# Tidak disarankan menjalankan perintah di sini karena cPanel shared hosting
+# memiliki batasan resource. Fokus pada file synchronization saja.
+
+# Optional: Jalankan perintah setelah pull selesai
+# post_pull:
+#   - command: 'find . -type f -name "*.html" -exec chmod 644 {} \;'
+#     description: 'Set file permissions untuk HTML files'
+
+# ==============================================================================
+# Notes:
+# - cPanel akan otomatis pull ketika webhook dari GitHub dipicu
+# - Perubahan file akan di-sync ke direktori deployment yang sudah ditentukan
+# - File yang di-exclude tidak akan dihapus dari server (safe mode)
+# - Untuk deployment ke multiple directori, buat repository terpisah
+# ==============================================================================
