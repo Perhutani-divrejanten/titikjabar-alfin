@@ -113,27 +113,25 @@ function scanLocalArticles() {
       const pMatch = content.match(/<p[^>]*>([^<]+)<\/p>/);
       if (pMatch) excerpt = pMatch[1].trim().substring(0, 150);
       
-      // Extract badge/category from the badge element in HTML
-      let category = 'Berita Lokal';
-      const badgeMatch = content.match(/<a[^>]*class="badge badge-primary[^>]*>([^<]+)<\/a>/);
-      if (badgeMatch) {
-        category = badgeMatch[1].trim();
-      }
-      
       // Extract first image from content
       const imagePath = extractFirstImage(content);
+
+     // Extract category from badge element
+let category = 'Lokal';
+const badgeMatch = content.match(/<a[^>]*class="badge[^"]*"[^>]*>([^<]+)<\/a>/i);
+if (badgeMatch) category = badgeMatch[1].trim();
       
       localArticles.push({
         title,
         excerpt,
-        category: category,
+        category,
         date: new Date().toISOString().split('T')[0],
         image: imagePath,
         url: `article/${slug}.html`,
         slug,
         isLocal: true
       });
-      console.log(`   📄 ${slug} (category: ${category}, image: ${imagePath})`);
+      console.log(`   📄 ${slug} (image: ${imagePath})`);
     } catch (err) {
       console.warn(`   ⚠️  Error reading ${file}:`, err.message);
     }
@@ -299,8 +297,8 @@ async function generateArticles() {
     console.log(`   ✨ New: ${newCount}`);
     console.log(`   🔄 Updated: ${updateCount}`);
     console.log(`   ⏭️  Skipped: ${skipCount}`);
-    console.log(`     Local preserved: ${localPreserved}`);
-    console.log(`    🗑️  Deleted: ${removed.length}`);
+    console.log(`   � Local preserved: ${localPreserved}`);
+    console.log(`   �🗑️  Deleted: ${removed.length}`);
     console.log(`   📁 Total: ${existingArticles.length}`);
     console.log(`\n✅ Done!`);
   } catch (err) {
